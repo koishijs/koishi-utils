@@ -5,7 +5,7 @@ export function randomSign () {
 const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 export function randomId (length = 16) {
   let output = ''
-  for (let index = length; index > 0; index --) {
+  for (let index = length; index > 0; --index) {
     output += chars[Math.floor(Math.random() * 62)]
   }
   return output
@@ -17,9 +17,9 @@ export function randomId (length = 16) {
  * @param end end number
  * @returns a random real in the interval [start, end)
  */
-export function randomReal(end: number): number
-export function randomReal(start: number, end: number): number
-export function randomReal(...args: [number, number?]): number {
+export function randomReal (end: number): number
+export function randomReal (start: number, end: number): number
+export function randomReal (...args: [number, number?]): number {
   const start = args.length > 1 ? args[0] : 0
   const end = args[args.length - 1] || 1
   return Math.random() * (end - start) + start
@@ -31,9 +31,9 @@ export function randomReal(...args: [number, number?]): number {
  * @param end end number
  * @returns a random integer in the interval [start, end)
  */
-export function randomInt(end: number): number
-export function randomInt(start: number, end: number): number
-export function randomInt(...args: [number, number?]): number {
+export function randomInt (end: number): number
+export function randomInt (start: number, end: number): number
+export function randomInt (...args: [number, number?]): number {
   return Math.floor(randomReal(...args))
 }
 
