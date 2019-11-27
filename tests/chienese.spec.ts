@@ -1,4 +1,4 @@
-import { simplify, traditionalize } from '../src/chinese'
+import { simplify, traditionalize } from '../src'
 
 describe('Chinese', () => {
   test('simplify', () => {

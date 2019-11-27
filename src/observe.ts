@@ -1,4 +1,5 @@
 import debug from 'debug'
+import { noop } from './misc'
 
 const showObserverLog = debug('koishi:observer')
 const staticTypes = ['number', 'string', 'bigint', 'boolean', 'symbol', 'function']
@@ -21,7 +22,7 @@ function observeObject <T extends object> (target: T, label: string, update?: ()
       const _update = update || (() => {
         const hasKey = key in target._diff
         target._diff[key] = proxy[key]
-        if (!hasKey) {
+        if (!hasKey && label) {
           showObserverLog(`[diff] ${label}: ${String(key)}`)
         }
       })
@@ -38,7 +39,7 @@ function observeObject <T extends object> (target: T, label: string, update?: ()
         } else if (typeof key !== 'string' || !key.startsWith('_')) {
           const hasKey = key in target._diff
           target._diff[key] = value
-          if (!hasKey) {
+          if (!hasKey && label) {
             showObserverLog(`[diff] ${label}: ${String(key)}`)
           }
         }
@@ -59,6 +60,24 @@ function observeObject <T extends object> (target: T, label: string, update?: ()
 function observeArray <T> (target: T[], label: string, update: () => void) {
   const proxy: Record<number, T> = {}
 
+  Object.defineProperties(target, {
+    pop: {
+      value: function () {
+        return update(), Array.prototype.pop.call(this)
+      },
+    },
+    shift: {
+      value: function () {
+        return update(), Array.prototype.shift.call(this)
+      },
+    },
+    splice: {
+      value: function (...args: any[]) {
+        return update(), Array.prototype.splice.apply(this, args)
+      },
+    },
+  })
+
   return new Proxy(target, {
     get (target, key) {
       if (key in proxy) return proxy[key]
@@ -77,19 +96,26 @@ function observeArray <T> (target: T[], label: string, update: () => void) {
   })
 }
 
-export type Observed <T, U = any> = T & {
+export type Observed <T> = T & {
   _diff: Partial<T>
-  _update: () => U
-  _merge: (value: Partial<T>) => Observed <T, U>
+  _update: () => any
+  _merge: (value: Partial<T>) => Observed <T>
 }
 
-export function observe <T extends object, U> (target: T, label: string, update: (diff: Partial<T>) => U) {
+type UpdateFunction <T> = (diff: Partial<T>) => any
+
+export function observe <T extends object> (target: T, label?: string): Observed<T>
+export function observe <T extends object> (target: T, update: UpdateFunction<T>, label?: string): Observed<T>
+export function observe <T extends object> (target: T, ...args: [string?] | [UpdateFunction<T>, string?]) {
+  let label = '', update: UpdateFunction<T> = noop
+  if (typeof args[0] === 'function') update = args.shift() as UpdateFunction<T>
+  if (typeof args[0] === 'string') label = args[0]
   Object.defineProperty(target, '_update', {
-    value (this: Observed<T, U>) {
+    value (this: Observed<T>) {
       const diff = this._diff
       const fields = Object.keys(diff)
       if (fields.length) {
-        showObserverLog(`[update] ${label}: ${fields.join(', ')}`)
+        if (label) showObserverLog(`[update] ${label}: ${fields.join(', ')}`)
         this._diff = {}
         return update(diff)
       }
@@ -101,5 +127,5 @@ export function observe <T extends object, U> (target: T, label: string, update:
       return this
     },
   })
-  return observeObject(target, label, null) as Observed<T, U>
+  return observeObject(target, label, null) as Observed<T>
 }

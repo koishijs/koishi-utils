@@ -1,4 +1,4 @@
-import CQCode from '../src/cqCode'
+import { CQCode } from '../src'
 
 describe('CQ Code', () => {
   test('stringify', () => {
