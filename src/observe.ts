@@ -57,26 +57,19 @@ function observeObject <T extends object> (target: T, label: string, update?: ()
   })
 }
 
+const arrayProxyMethods = ['pop', 'shift', 'splice']
+
 function observeArray <T> (target: T[], label: string, update: () => void) {
   const proxy: Record<number, T> = {}
 
-  Object.defineProperties(target, {
-    pop: {
-      value: function () {
-        return update(), Array.prototype.pop.call(this)
-      },
-    },
-    shift: {
-      value: function () {
-        return update(), Array.prototype.shift.call(this)
-      },
-    },
-    splice: {
+  for (const method of arrayProxyMethods) {
+    Object.defineProperty(target, method, {
       value: function (...args: any[]) {
-        return update(), Array.prototype.splice.apply(this, args)
+        update()
+        return Array.prototype[method].apply(this, args)
       },
-    },
-  })
+    })
+  }
 
   return new Proxy(target, {
     get (target, key) {

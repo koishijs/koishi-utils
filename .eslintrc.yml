@@ -9,6 +9,8 @@ rules:
   comma-dangle:
     - warn
     - always-multiline
+  # https://github.com/typescript-eslint/typescript-eslint/issues/239
+  no-inner-declarations: off
   no-mixed-operators: off
   no-unused-vars: off
   no-return-assign: off

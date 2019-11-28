@@ -13,7 +13,7 @@ namespace CQCode {
       ? result.replace(/,/g, '&#44;').replace(/(\ud83c[\udf00-\udfff])|(\ud83d[\udc00-\ude4f\ude80-\udeff])|[\u2600-\u2B55]/g, ' ')
       : result
   }
-  
+
   export function unescape (source: string) {
     return String(source)
       .replace(/&amp;/g, '&')
@@ -21,7 +21,7 @@ namespace CQCode {
       .replace(/&#93;/g, ']')
       .replace(/&#44;/g, ',')
   }
-  
+
   export function stringify (type: string, data: Record<string, any>) {
     let output = '[CQ:' + type
     for (const key in data) {
