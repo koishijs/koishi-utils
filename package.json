@@ -1,6 +1,6 @@
 {
   "name": "koishi-utils",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -10,7 +10,8 @@
   "license": "MIT",
   "scripts": {
     "jest": "jest tests/.*\\.spec\\.ts",
-    "lint": "eslint src --ext .ts"
+    "lint": "eslint src --ext .ts",
+    "prepack": "tsc -b"
   },
   "devDependencies": {
     "@types/debug": "^4.1.5",

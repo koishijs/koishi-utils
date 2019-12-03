@@ -57,12 +57,12 @@ export function randomMultiPick <T> (source: T[], count: number) {
   return result
 }
 
-export function randomWeightedPick <T extends string | number | symbol> (source: Record<T, number>, rand = Math.random()): T {
-  const total = Object.entries(source).reduce((prev, [_, curr]) => prev + (curr as number), 0)
-  const pointer = rand * total
+export function randomWeightedPick <T extends keyof any> (weights: Record<T, number>, value = Math.random()): T {
+  const total = Object.entries(weights).reduce((prev, [_, curr]) => prev + (curr as number), 0)
+  const pointer = value * total
   let counter = 0
-  for (const key in source) {
-    counter += source[key]
+  for (const key in weights) {
+    counter += weights[key]
     if (pointer < counter) return key
   }
 }

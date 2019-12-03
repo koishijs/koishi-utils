@@ -19,5 +19,5 @@ function deepen (modifyString: (source: string) => string) {
 }
 
 export const camelCase = deepen(source => source.replace(/[_-][a-z]/g, str => str.slice(1).toUpperCase()))
-export const paramCase = deepen(source => source.replace(/[A-Z]/g, str => '-' + str.toLowerCase()))
-export const snakeCase = deepen(source => source.replace(/[A-Z]/g, str => '_' + str.toLowerCase()))
+export const paramCase = deepen(source => source.replace(/_/g, '-').replace(/[A-Z]/g, str => '-' + str.toLowerCase()))
+export const snakeCase = deepen(source => source.replace(/-/g, '_').replace(/[A-Z]/g, str => '_' + str.toLowerCase()))
